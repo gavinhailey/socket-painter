@@ -7,6 +7,7 @@ import java.awt.event.*;
 public class Painter extends JFrame implements ActionListener, MouseListener, MouseMotionListener {
     private Color colorSelection;
     private String shapeSelection;
+    private Point startPoint;
 
     public Painter() {
         setSize(500, 500);
@@ -71,6 +72,7 @@ public class Painter extends JFrame implements ActionListener, MouseListener, Mo
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
+        System.out.println("Action Event: " + actionEvent.getActionCommand());
         switch (actionEvent.getActionCommand()) {
             case "red":
                 this.colorSelection = Color.RED;
@@ -92,12 +94,17 @@ public class Painter extends JFrame implements ActionListener, MouseListener, Mo
 
     @Override
     public void mousePressed(MouseEvent mouseEvent) {
-
+        System.out.println("Mouse Pressed! at "+mouseEvent.getPoint().toString());
+        this.startPoint = mouseEvent.getPoint();
     }
 
     @Override
     public void mouseReleased(MouseEvent mouseEvent) {
-
+        System.out.println("Mouse Released! at "+mouseEvent.getPoint().toString());
+        if (shapeSelection.equals("line"))
+            new Line(this.colorSelection, this.startPoint, mouseEvent.getPoint());
+        else if (shapeSelection.equals("circle"))
+            new Circle(this.colorSelection, this.startPoint, mouseEvent.getPoint());
     }
 
     @Override

@@ -3,7 +3,7 @@ package edu.du.thompsonhailey.socketpainter;
 import java.awt.*;
 
 public abstract class PaintingPrimitive {
-    Color c;
+    protected Color c;
     public PaintingPrimitive(Color c){
         this.c = c;
     }

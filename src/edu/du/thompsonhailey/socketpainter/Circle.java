@@ -6,7 +6,7 @@ public class Circle extends PaintingPrimitive {
     private Point center;
     private Point radiusPoint;
 
-    public Circle(Color c, Point center, Point radiusPoint){
+    public Circle(Color c, Point center, Point radiusPoint) {
         super(c);
         this.center = center;
         this.radiusPoint = radiusPoint;

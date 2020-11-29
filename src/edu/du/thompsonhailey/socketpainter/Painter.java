@@ -86,18 +86,17 @@ public class Painter extends JFrame implements ActionListener, MouseListener, Mo
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         System.out.println("Action Event: " + actionEvent.getActionCommand());
-        switch (actionEvent.getActionCommand()) {
-            case "red":
-                this.colorSelection = Color.RED;
-            case "green":
-                this.colorSelection = Color.GREEN;
-            case "blue":
-                this.colorSelection = Color.BLUE;
-            case "line":
-                this.shapeSelection = "line";
-            case "circle":
-                this.shapeSelection = "circle";
-        }
+        String s = actionEvent.getActionCommand();
+        if (s.equals("red"))
+            this.colorSelection = Color.RED;
+        else if (s.equals("green"))
+            this.colorSelection = Color.GREEN;
+        else if (s.equals("blue"))
+            this.colorSelection = Color.BLUE;
+        else if (s.equals("line"))
+            this.shapeSelection = "line";
+        else if (s.equals("circle"))
+            this.shapeSelection = "circle";
     }
 
     @Override
@@ -123,6 +122,7 @@ public class Painter extends JFrame implements ActionListener, MouseListener, Mo
             Circle c = new Circle(this.colorSelection, this.startPoint, mouseEvent.getPoint());
             paintingPanel.addPrimitive(c);
         }
+        paintingPanel.updateUI();
     }
 
     @Override

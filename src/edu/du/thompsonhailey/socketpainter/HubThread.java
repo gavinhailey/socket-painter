@@ -7,12 +7,12 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class HubThread extends Thread{
-
     private Socket s;
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
     private PaintingPanel panel;
     private ArrayList<String> msgs;
+
     public HubThread(Socket s, ObjectInputStream ois, ObjectOutputStream oos, PaintingPanel panel, ArrayList<String> msgs) {
         this.s = s;
         this.ois = ois;
@@ -23,6 +23,7 @@ public class HubThread extends Thread{
 
     @Override
     public void run() {
+        while (true) {
             try {
                 Object in = ois.readObject();
 
@@ -38,18 +39,6 @@ public class HubThread extends Thread{
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
-
-        try {
-            ois.close();
-            oos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-
     }
-
-    private void addPrimative(PaintingPrimitive p){
-        panel.addPrimitive(p);
-    }
-
 }

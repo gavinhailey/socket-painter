@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class ClientListener extends Thread{
+public class ClientListener extends Thread {
 
     private Socket s;
     private ObjectInputStream ois;
@@ -21,16 +21,15 @@ public class ClientListener extends Thread{
     @Override
     public void run(){
         try {
-            Object in = ois.readObject();
-
-            if(in instanceof PaintingPanel){
-                p.setPanel(in);
-            }else if(in instanceof ArrayList){
-                if(((ArrayList<?>) in).get(0) instanceof String)
-                    p.setMsgs((ArrayList<String>)in);
+            while (true) {
+                Object in = ois.readObject();
+                if (in instanceof PaintingPanel) {
+                    p.setPaintingPanel((PaintingPanel) in);
+                } else if (in instanceof ArrayList) {
+                    if (((ArrayList<?>) in).get(0) instanceof String)
+                        p.setChatText((ArrayList<String>) in);
+                }
             }
-
-            ois.close();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {

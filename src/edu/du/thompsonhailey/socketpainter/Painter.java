@@ -149,7 +149,7 @@ public class Painter extends JFrame implements ActionListener, MouseListener, Mo
         else if (s.equals("send")) {
             String msg = name + ": " + messageField.getText() + "\n";
             chatText.add(msg);
-            chatArea.append(msg);
+            updateText();
             chatArea.updateUI();
             try {
                 oos.writeObject(msg);
@@ -207,10 +207,25 @@ public class Painter extends JFrame implements ActionListener, MouseListener, Mo
 
     }
 
+    public void updateText() {
+        chatArea.setText("");
+        for (String s : chatText)
+            chatArea.append(s);
+    }
+
+    public void setPaintingPanel(PaintingPanel paintingPanel) {
+        this.paintingPanel = paintingPanel;
+    }
+
+    public void setChatText(ArrayList<String> chatText) {
+        this.chatText = chatText;
+    }
+
     public static void main(String[] args) {
         Painter painter = new Painter();
         painter.name = JOptionPane.showInputDialog("Enter your name:");
         if (painter.name == null)
             System.exit(1);
+        Thread t = new ClientListener(painter.socket, painter.ois, painter);
     }
 }

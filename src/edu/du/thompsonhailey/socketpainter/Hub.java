@@ -5,32 +5,39 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Hub {
-    ServerSocket ss;
 
-    {
+    private static PaintingPanel panel = new PaintingPanel();
+    private static ArrayList<String> msgs = new ArrayList<>();
+    private static ArrayList<Socket> sockets = new ArrayList<>();
+
+    public static void main(String[] args) {
+
         try {
-            ss = new ServerSocket(6969);
+            ServerSocket ss = new ServerSocket(6969);
 
-            while(true){
+            while (true) {
                 Socket s = ss.accept();
 
                 ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
                 ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
 
-                Object in = ois.readObject();
+                Thread t = new HubThread(s, ois, oos, panel, msgs);
 
-                if(in instanceof PaintingPrimitive){
-
-                }else if(in instanceof String){
-
-                }
+                t.start();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+           } catch (IOException e) {
+               e.printStackTrace();
+           }
+       }
+    public static synchronized void addPrimative(PaintingPrimitive p){
+        panel.addPrimitive(p);
     }
+
+    public static synchronized void addMsg(String msg){
+        msgs.add(msg);
+    }
+
 }

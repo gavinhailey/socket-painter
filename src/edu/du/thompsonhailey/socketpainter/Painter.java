@@ -216,9 +216,9 @@ public class Painter extends JFrame implements ActionListener, MouseListener, Mo
     @Override
     public void windowClosing(WindowEvent windowEvent) {
         try {
-            this.socket.close();
             this.oos.close();
             this.ois.close();
+            this.socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

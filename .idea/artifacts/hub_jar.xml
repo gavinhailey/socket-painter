@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="hub:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/hub_jar</output-path>
+    <root id="archive" name="hub.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/out/hub/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="assignment3" />
+    </root>
+  </artifact>
+</component>

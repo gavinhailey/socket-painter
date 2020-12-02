@@ -6,7 +6,7 @@ Created by: Gavin Hailey and Giovanni Thompson
 All functions work properly. Messaging and drawing work as expected. All clients see the same thing updated instantly. A user joining late will recieve the fully updated chat and canvas.
 ### Usage
 - Hub (Server):
-  `gcc hcompress.c linkedList.c -o hcompress -Wall`
+  `./out/artifacts/hub_jar/hub.jar`
 
 - Painter (Client):
-  `./hcompress -e {filename}.txt`
+  `./out/artifacts/painter_jar/painter.jar`

@@ -36,10 +36,8 @@ public class HubThread extends Thread {
                 Object in = ois.readObject();
                 if (in instanceof PaintingPrimitive) {
                     Hub.addPrimitive((PaintingPrimitive) in, this);
-                    oos.writeObject(panel);
                 } else if (in instanceof String) {
                     Hub.addMsg((String) in, this);
-                    oos.writeObject(msgs);
                 }
             } catch (EOFException e) {
                 try {

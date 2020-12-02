@@ -15,6 +15,11 @@ public class PaintingPanel extends JPanel {
         this.list.add(obj);
     }
 
+    public void addAll(PaintingPanel p) {
+        System.out.println(p.list.toString());
+        this.list.addAll(p.list);
+    }
+
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         for(PaintingPrimitive obj : list) {

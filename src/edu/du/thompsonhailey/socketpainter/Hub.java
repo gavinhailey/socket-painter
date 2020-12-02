@@ -11,7 +11,7 @@ public class Hub {
 
     private static PaintingPanel panel = new PaintingPanel();
     private static ArrayList<String> msgs = new ArrayList<>();
-    private static ArrayList<Socket> sockets = new ArrayList<>();
+    private static ArrayList<HubThread> threads = new ArrayList<>();
 
     public static void main(String[] args) {
 
@@ -20,11 +20,12 @@ public class Hub {
 
             while (true) {
                 Socket s = ss.accept();
-
+                System.out.println("Connection Established");
                 ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
                 ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
 
-                Thread t = new HubThread(s, ois, oos, panel, msgs);
+                HubThread t = new HubThread(s, ois, oos, panel, msgs);
+                threads.add(t);
 
                 t.start();
             }
@@ -32,12 +33,21 @@ public class Hub {
                e.printStackTrace();
            }
        }
-    public static synchronized void addPrimative(PaintingPrimitive p){
+    public static synchronized void addPrimitive(PaintingPrimitive p, HubThread t){
         panel.addPrimitive(p);
+        sendObject(p, t);
     }
 
-    public static synchronized void addMsg(String msg){
+    public static synchronized void addMsg(String msg, HubThread t){
         msgs.add(msg);
+        sendObject(msg, t);
+    }
+
+    public static synchronized void sendObject(Object o, HubThread th) {
+        for (HubThread t : threads) {
+            if (!t.equals(th))
+                t.sendObject(o);
+        }
     }
 
 }

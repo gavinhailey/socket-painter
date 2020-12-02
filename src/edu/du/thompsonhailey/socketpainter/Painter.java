@@ -24,10 +24,11 @@ public class Painter extends JFrame implements ActionListener, MouseListener, Mo
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
 
-    public Painter() {
+    public Painter(String name) {
         this.shapeSelection = "line";
         this.colorSelection = Color.RED;
         chatText = new ArrayList<>();
+        this.name = name;
 
         setSize(500, 500);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -37,7 +38,7 @@ public class Painter extends JFrame implements ActionListener, MouseListener, Mo
 
         // Create the paints
         JPanel paintPanel = new JPanel();
-        paintPanel.setLayout(new GridLayout(3, 1)); // 3 by 1
+        paintPanel.setLayout(new GridLayout(3, 1));
 
         // add red paint button
         JButton redPaint = new JButton();
@@ -125,8 +126,8 @@ public class Painter extends JFrame implements ActionListener, MouseListener, Mo
 
         try {
             socket = new Socket("localhost", 6969);
-            ois = new ObjectInputStream(socket.getInputStream());
             oos = new ObjectOutputStream(socket.getOutputStream());
+            ois = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -177,10 +178,20 @@ public class Painter extends JFrame implements ActionListener, MouseListener, Mo
             System.out.println("adding line");
             Line l = new Line(this.colorSelection, this.startPoint, mouseEvent.getPoint());
             paintingPanel.addPrimitive(l);
+            try {
+                oos.writeObject((PaintingPrimitive) l);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else if (shapeSelection.equals("circle")) {
             System.out.println("adding circle");
             Circle c = new Circle(this.colorSelection, this.startPoint, mouseEvent.getPoint());
             paintingPanel.addPrimitive(c);
+            try {
+                oos.writeObject((PaintingPrimitive) c);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else {
             System.out.println("Invalid shape!");
         }
@@ -207,25 +218,38 @@ public class Painter extends JFrame implements ActionListener, MouseListener, Mo
 
     }
 
-    public void updateText() {
+    private void updateText() {
         chatArea.setText("");
         for (String s : chatText)
             chatArea.append(s);
     }
 
-    public void setPaintingPanel(PaintingPanel paintingPanel) {
-        this.paintingPanel = paintingPanel;
+    public void addPrimitive(PaintingPrimitive p) {
+        paintingPanel.addPrimitive(p);
+        paintingPanel.updateUI();
     }
 
-    public void setChatText(ArrayList<String> chatText) {
-        this.chatText = chatText;
+    public void addText(String s) {
+        chatText.add(s);
+        updateText();
     }
 
     public static void main(String[] args) {
-        Painter painter = new Painter();
-        painter.name = JOptionPane.showInputDialog("Enter your name:");
-        if (painter.name == null)
+        String name = JOptionPane.showInputDialog("Enter your name:");
+        if (name == null)
             System.exit(1);
-        Thread t = new ClientListener(painter.socket, painter.ois, painter);
+        Painter painter = new Painter(name);
+        try {
+            Object in = painter.ois.readObject();
+            if (in instanceof PaintingPanel)
+                painter.paintingPanel.addAll((PaintingPanel) in);
+            in = painter.ois.readObject();
+            if (in instanceof ArrayList<?>)
+                painter.chatText.addAll((ArrayList<String>) in);
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        Thread t = new PainterListener(painter.ois, painter);
+        t.start();
     }
 }

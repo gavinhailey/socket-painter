@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class HubThread extends Thread{
+public class HubThread extends Thread {
     private Socket s;
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
@@ -23,22 +23,33 @@ public class HubThread extends Thread{
 
     @Override
     public void run() {
+        try {
+            oos.writeObject(panel);
+            oos.writeObject(msgs);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         while (true) {
             try {
                 Object in = ois.readObject();
-
                 if (in instanceof PaintingPrimitive) {
-                    Hub.addPrimative((PaintingPrimitive) in);
+                    Hub.addPrimitive((PaintingPrimitive) in, this);
                     oos.writeObject(panel);
                 } else if (in instanceof String) {
-                    Hub.addMsg((String) in);
+                    Hub.addMsg((String) in, this);
                     oos.writeObject(msgs);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void sendObject(Object o) {
+        try {
+            oos.writeObject(o);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

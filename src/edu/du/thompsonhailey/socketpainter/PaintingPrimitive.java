@@ -1,8 +1,9 @@
 package edu.du.thompsonhailey.socketpainter;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public abstract class PaintingPrimitive {
+public abstract class PaintingPrimitive implements Serializable {
     protected Color c;
     public PaintingPrimitive(Color c){
         this.c = c;

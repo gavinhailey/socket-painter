@@ -1,5 +1,6 @@
 package edu.du.thompsonhailey.socketpainter;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -23,13 +24,14 @@ public class HubThread extends Thread {
 
     @Override
     public void run() {
+        boolean run = true;
         try {
             oos.writeObject(panel);
             oos.writeObject(msgs);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        while (true) {
+        while (run) {
             try {
                 Object in = ois.readObject();
                 if (in instanceof PaintingPrimitive) {
@@ -39,6 +41,16 @@ public class HubThread extends Thread {
                     Hub.addMsg((String) in, this);
                     oos.writeObject(msgs);
                 }
+            } catch (EOFException e) {
+                try {
+                    System.out.println("Closing connection");
+                    ois.close();
+                    oos.close();
+                    s.close();
+                } catch (IOException e2) {
+                    e2.printStackTrace();
+                }
+                run = false;
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }

@@ -11,7 +11,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class Painter extends JFrame implements ActionListener, MouseListener, MouseMotionListener {
+public class Painter extends JFrame implements ActionListener, MouseListener, MouseMotionListener, WindowListener {
     private Color colorSelection;
     private String shapeSelection;
     private Point startPoint;
@@ -27,8 +27,8 @@ public class Painter extends JFrame implements ActionListener, MouseListener, Mo
     public Painter(String name) {
         this.shapeSelection = "line";
         this.colorSelection = Color.RED;
-        chatText = new ArrayList<>();
         this.name = name;
+        chatText = new ArrayList<>();
 
         setSize(500, 500);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -199,24 +199,45 @@ public class Painter extends JFrame implements ActionListener, MouseListener, Mo
     }
 
     @Override
-    public void mouseEntered(MouseEvent mouseEvent) {
+    public void mouseEntered(MouseEvent mouseEvent) { }
 
+    @Override
+    public void mouseExited(MouseEvent mouseEvent) { }
+
+    @Override
+    public void mouseDragged(MouseEvent mouseEvent) { }
+
+    @Override
+    public void mouseMoved(MouseEvent mouseEvent) { }
+
+    @Override
+    public void windowOpened(WindowEvent windowEvent) { }
+
+    @Override
+    public void windowClosing(WindowEvent windowEvent) {
+        try {
+            this.socket.close();
+            this.oos.close();
+            this.ois.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public void mouseExited(MouseEvent mouseEvent) {
-
-    }
+    public void windowClosed(WindowEvent windowEvent) { }
 
     @Override
-    public void mouseDragged(MouseEvent mouseEvent) {
-
-    }
+    public void windowIconified(WindowEvent windowEvent) { }
 
     @Override
-    public void mouseMoved(MouseEvent mouseEvent) {
+    public void windowDeiconified(WindowEvent windowEvent) { }
 
-    }
+    @Override
+    public void windowActivated(WindowEvent windowEvent) { }
+
+    @Override
+    public void windowDeactivated(WindowEvent windowEvent) { }
 
     private void updateText() {
         chatArea.setText("");
@@ -245,10 +266,14 @@ public class Painter extends JFrame implements ActionListener, MouseListener, Mo
                 painter.paintingPanel.addAll((PaintingPanel) in);
             in = painter.ois.readObject();
             if (in instanceof ArrayList<?>)
+                if (!((ArrayList<?>) in).isEmpty() && ((ArrayList<?>) in).get(0) instanceof String)
                 painter.chatText.addAll((ArrayList<String>) in);
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+        painter.paintingPanel.updateUI();
+        painter.updateText();
+        painter.chatArea.updateUI();
         Thread t = new PainterListener(painter.ois, painter);
         t.start();
     }

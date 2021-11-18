@@ -24,7 +24,7 @@ public class Painter extends JFrame implements ActionListener, MouseListener, Mo
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
 
-    public Painter(String name) {
+    public Painter(String name, String ipaddr) {
         this.shapeSelection = "line";
         this.colorSelection = Color.RED;
         this.name = name;
@@ -125,7 +125,7 @@ public class Painter extends JFrame implements ActionListener, MouseListener, Mo
         setVisible(true);
 
         try {
-            socket = new Socket("localhost", 6969);
+            socket = new Socket(ipaddr, 6969);
             oos = new ObjectOutputStream(socket.getOutputStream());
             ois = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
@@ -259,7 +259,10 @@ public class Painter extends JFrame implements ActionListener, MouseListener, Mo
         String name = JOptionPane.showInputDialog("Enter your name:");
         if (name == null)
             System.exit(1);
-        Painter painter = new Painter(name);
+        String ipaddr = JOptionPane.showInputDialog("Enter the Server IP:");
+        if (ipaddr == null)
+            System.exit(1);
+        Painter painter = new Painter(name, ipaddr);
         try {
             Object in = painter.ois.readObject();
             if (in instanceof PaintingPanel)
